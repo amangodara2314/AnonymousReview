@@ -1,101 +1,210 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { Eye, Send, Lock, LogIn, UserPlus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+export default function LandingPage() {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-[#121212] text-white font-sans">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#121212] border-b border-gray-800">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="text-2xl font-bold text-cyan-400">ReviewEcho</div>
+          <nav className="space-x-4">
+            <a
+              href="#"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              About
+            </a>
+            <a
+              href="#"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              FAQ
+            </a>
+          </nav>
         </div>
+      </header>
+
+      <main className="pt-32 pb-20 px-4">
+        <section className="container mx-auto text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            Give or take anonymous reviews
+            <br />
+            with just a link
+          </h1>
+          <p className="text-xl mb-12 text-gray-400 max-w-2xl mx-auto">
+            Simple, secure, and straightforward. No public feeds, just honest
+            feedback.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  size="lg"
+                  className="bg-cyan-600 text-white hover:bg-cyan-700 transition-all duration-300"
+                >
+                  Request a Review
+                  <Eye className="ml-2" size={20} />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#1E1E1E] border-gray-700">
+                <DialogHeader>
+                  <DialogTitle>Log in or Sign up</DialogTitle>
+                </DialogHeader>
+                <LoginForm onClose={() => setIsLoginModalOpen(false)} />
+              </DialogContent>
+            </Dialog>
+            <Dialog
+              open={isSubmitModalOpen}
+              onOpenChange={setIsSubmitModalOpen}
+            >
+              <DialogTrigger asChild>
+                <Button
+                  size="lg"
+                  className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300"
+                >
+                  Submit a Review
+                  <Send className="ml-2" size={20} />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#1E1E1E] border-gray-700">
+                <DialogHeader>
+                  <DialogTitle>Submit Anonymous Review</DialogTitle>
+                </DialogHeader>
+                <SubmitReviewForm onClose={() => setIsSubmitModalOpen(false)} />
+              </DialogContent>
+            </Dialog>
+          </div>
+        </section>
+
+        <section className="mt-20">
+          <div className="container mx-auto">
+            <h2 className="text-2xl font-bold mb-8 text-center">
+              How it works
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <FeatureCard
+                icon={<UserPlus size={24} />}
+                title="Request Reviews"
+                description="Sign up, generate a unique link, and share it to receive anonymous feedback."
+              />
+              <FeatureCard
+                icon={<Send size={24} />}
+                title="Submit Reviews"
+                description="Use the unique link to submit anonymous reviews without logging in."
+              />
+              <FeatureCard
+                icon={<Lock size={24} />}
+                title="Private Feedback"
+                description="Only you can access the reviews through your secure dashboard."
+              />
+            </div>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="py-8 px-4 border-t border-gray-800">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="text-gray-400 text-sm">
+            © 2023 ReviewEcho. All rights reserved.
+          </div>
+          <div className="flex space-x-4">
+            <a
+              href="#"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              Privacy
+            </a>
+            <a
+              href="#"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              Terms
+            </a>
+          </div>
+        </div>
       </footer>
     </div>
+  );
+}
+
+function FeatureCard({ icon, title, description }) {
+  return (
+    <div className="bg-[#1E1E1E] p-6 rounded-lg text-center">
+      <div className="text-cyan-400 mb-4 flex justify-center">{icon}</div>
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <p className="text-gray-400 text-sm">{description}</p>
+    </div>
+  );
+}
+
+function LoginForm({ onClose }) {
+  const [isSignUp, setIsSignUp] = useState(false);
+
+  return (
+    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <Input
+        type="email"
+        placeholder="Email"
+        className="bg-[#2A2A2A] border-gray-700 text-white"
+      />
+      <Input
+        type="password"
+        placeholder="Password"
+        className="bg-[#2A2A2A] border-gray-700 text-white"
+      />
+      {isSignUp && (
+        <Input
+          type="password"
+          placeholder="Confirm Password"
+          className="bg-[#2A2A2A] border-gray-700 text-white"
+        />
+      )}
+      <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700">
+        {isSignUp ? "Sign Up" : "Log In"}
+      </Button>
+      <div className="text-center">
+        <button
+          type="button"
+          className="text-cyan-400 hover:underline"
+          onClick={() => setIsSignUp(!isSignUp)}
+        >
+          {isSignUp
+            ? "Already have an account? Log in"
+            : "Need an account? Sign up"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function SubmitReviewForm({ onClose }) {
+  return (
+    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <Textarea
+        placeholder="Type your anonymous review here..."
+        className="bg-[#2A2A2A] border-gray-700 text-white min-h-[150px]"
+      />
+      <Button
+        type="submit"
+        className="w-full bg-purple-600 hover:bg-purple-700"
+      >
+        Submit Anonymous Review
+      </Button>
+    </form>
   );
 }
