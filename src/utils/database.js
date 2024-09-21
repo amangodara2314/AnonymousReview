@@ -1,21 +1,16 @@
-// lib/db.js
-
 import mongoose from "mongoose";
 
-let isConnected = false; // Track the connection status
+let isConnected = false;
 
 export async function connectToDatabase() {
-  // Check if already connected
   if (isConnected) {
     console.log("Already connected to the database");
     return;
   }
 
   try {
-    // Connect to the MongoDB database using Mongoose
     const db = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      dbName: "anonymousinsight",
     });
 
     isConnected = !!db.connections[0].readyState;

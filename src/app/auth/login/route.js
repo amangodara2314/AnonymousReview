@@ -1,5 +1,3 @@
-// app/api/auth/login/route.js
-
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { connectToDatabase } from "@/lib/db";
@@ -11,7 +9,6 @@ export async function POST(req) {
 
     const { email, password } = await req.json();
 
-    // Check if the user exists
     const user = await User.findOne({ email });
     if (!user) {
       return new Response(
@@ -22,7 +19,6 @@ export async function POST(req) {
       );
     }
 
-    // Compare the password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return new Response(
@@ -33,7 +29,6 @@ export async function POST(req) {
       );
     }
 
-    // Generate JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
     return new Response(

@@ -29,8 +29,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-sans p-8 flex items-center justify-center">
-      <Card className="w-full max-w-md bg-gray-800 bg-opacity-50 border-gray-700 backdrop-blur-sm">
+    <div className="min-h-screen bg-black text-white font-sans p-8 flex items-center justify-center">
+      <Card className="w-full max-w-md bg-zinc-950 border border-gray-800">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-white">
             Log in to your account
@@ -41,19 +41,19 @@ export default function Login() {
             <div className="space-y-2">
               <label
                 htmlFor="email"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
+                className="text-sm font-medium leading-none text-white"
               >
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                 <Input
                   id="email"
                   placeholder="Enter your email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  className="pl-10 bg-zinc-950 border-gray-800 text-white placeholder-gray-500 focus:border-white focus:ring-white"
                   required
                 />
               </div>
@@ -61,25 +61,25 @@ export default function Login() {
             <div className="space-y-2">
               <label
                 htmlFor="password"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
+                className="text-sm font-medium leading-none text-white"
               >
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                 <Input
                   id="password"
                   placeholder="Enter your password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  className="pl-10 pr-10 bg-zinc-950 border-gray-800 text-white placeholder-gray-500 focus:border-white focus:ring-white"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-white focus:outline-none"
+                  className="absolute right-3 top-3 text-gray-500 hover:text-white focus:outline-none"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -93,19 +93,13 @@ export default function Login() {
           <CardFooter className="flex flex-col space-y-4">
             <Button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              className="w-full bg-white text-black hover:bg-gray-200 transition-colors"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Logging in..." : "Log in"}
             </Button>
             <div className="flex justify-between text-sm">
-              <Link
-                href="/forgot-password"
-                className="text-blue-400 hover:underline"
-              >
-                Forgot password?
-              </Link>
-              <Link href="/signup" className="text-blue-400 hover:underline">
+              <Link href="/signup" className="text-gray-400 hover:text-white">
                 Create an account
               </Link>
             </div>
