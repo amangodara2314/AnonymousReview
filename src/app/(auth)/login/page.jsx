@@ -12,20 +12,37 @@ import {
 } from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { useGlobalContext } from "@/context/GlobalContext";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const { BASE_URL, LOGIN } = useGlobalContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Here you would typically send the login data to your backend
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulating API call
-    setIsSubmitting(false);
-    // Handle successful login (e.g., redirect to dashboard)
+    try {
+      const response = await fetch(`${BASE_URL + LOGIN}`, {
+        method: "POST",
+        body: JSON.stringify({ email: email, password: password }),
+      });
+      if (response.status == 200) {
+        router.push("/dashboard");
+      } else {
+        const data = await response.json();
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Something Went Wrong!!");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -8,9 +8,10 @@ function GlobalContext({ children }) {
   const BASE_URL = process.env.NEXT_PUBLIC_URL_BASE_URL;
   const SIGNUP = process.env.NEXT_PUBLIC_URL_SIGNUP;
   const LOGIN = process.env.NEXT_PUBLIC_URL_LOGIN;
+  const POST = process.env.NEXT_PUBLIC_URL_POST;
 
   return (
-    <MainContext.Provider value={{ BASE_URL, SIGNUP, LOGIN }}>
+    <MainContext.Provider value={{ BASE_URL, SIGNUP, LOGIN, POST }}>
       {children}
       <Toaster position="top-center" />
     </MainContext.Provider>

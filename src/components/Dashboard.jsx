@@ -25,11 +25,15 @@ import {
   X,
   LogOut,
 } from "lucide-react";
+import { useGlobalContext } from "@/context/GlobalContext";
+import toast from "react-hot-toast";
 
 export default function Dashboard() {
+  const { BASE_URL, POST } = useGlobalContext();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [generatedLink, setGeneratedLink] = useState("");
+  const [loading, setLoading] = useState(false);
   const [previousPosts, setPreviousPosts] = useState([
     { id: 1, title: "Team Feedback", link: "https://reviewecho.com/r/abc123" },
     {
@@ -43,7 +47,6 @@ export default function Dashboard() {
       link: "https://reviewecho.com/r/ghi789",
     },
   ]);
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -55,17 +58,40 @@ export default function Dashboard() {
     }
   };
 
-  const generateLink = () => {
-    const newLink = `https://reviewecho.com/r/${Math.random()
-      .toString(36)
-      .substr(2, 6)}`;
-    setGeneratedLink(newLink);
-    setPreviousPosts([
-      { id: Date.now(), title, link: newLink },
-      ...previousPosts,
-    ]);
-    setTitle("");
-    setImage(null);
+  const generateLink = async () => {
+    if (!title) {
+      toast.error("Title is required");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+
+    if (image) {
+      formData.append("image", image);
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(BASE_URL + POST, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.status == 200) {
+        const newLink = `${BASE_URL}/${data.post._id}`;
+        setGeneratedLink(newLink);
+        setTitle("");
+        setImage(null);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copyLink = (link) => {
@@ -76,12 +102,12 @@ export default function Dashboard() {
     <div className="bg-black text-white font-sans">
       <main className="p-8">
         <div className="max-w-full mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-center">
+          <h2 className="text-3xl lg:text-5xl font-bold mb-8 text-center">
             Create a new post and start getting reviews
           </h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="bg-zinc-950 border-zinc-800">
+          <div className="grid grid-cols-1 gap-8 place-items-center">
+            <Card className="bg-zinc-950 border-zinc-800 w-full sm:w-[80%] lg:w-1/2">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-white">
                   Generate New Review Link
@@ -95,7 +121,7 @@ export default function Dashboard() {
                   onChange={(e) => setTitle(e.target.value)}
                   className="bg-black border-zinc-800 text-white placeholder-zinc-500 focus:border-white focus:ring-white"
                 />
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center">
                   <Input
                     type="file"
                     accept="image/*"
@@ -108,10 +134,10 @@ export default function Dashboard() {
                     onClick={() =>
                       document.getElementById("image-upload").click()
                     }
-                    className="w-full text-white border-zinc-800 hover:bg-zinc-900 transition-colors"
+                    className="w-full text-white h-24 border-zinc-800 hover:bg-zinc-900 hover:text-white"
                   >
                     <ImageIcon className="mr-2 h-4 w-4" />
-                    {image ? "Change Image" : "Add Image"}
+                    {image ? "Change Image" : "Upload Image"}
                   </Button>
                 </div>
                 {image && (
@@ -133,16 +159,19 @@ export default function Dashboard() {
                 )}
                 <Button
                   onClick={generateLink}
-                  className="w-full bg-white text-black hover:bg-zinc-200 transition-colors"
+                  disabled={loading}
+                  className={`w-full bg-white ${
+                    loading ? "text-gray-800" : "text-black"
+                  } hover:bg-zinc-200 transition-colors`}
                 >
-                  Generate Link
+                  {loading ? "Generating Link..." : "Generate Link"}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-zinc-950 border-zinc-800">
+            <Card className="bg-zinc-950 border-zinc-800 w-full sm:w-[80%] lg:w-1/2 text-white">
               <CardHeader>
-                <CardTitle className="text-2xl font-semibold text-white">
+                <CardTitle className="text-2xl font-semibold">
                   Previous Posts
                 </CardTitle>
               </CardHeader>
