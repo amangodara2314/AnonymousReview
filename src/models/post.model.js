@@ -1,3 +1,4 @@
+const { default: User } = require("@/app/models/user.model");
 const { default: mongoose } = require("mongoose");
 
 const PostSchema = new mongoose.Schema({

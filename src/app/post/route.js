@@ -11,44 +11,79 @@ export const config = {
   },
 };
 
-const handler = connectToDatabase()
-  .upload.single("image") // Use multer middleware for handling an array of images
-  .post(async (req, res) => {
+export async function POST(req) {
+  await connectToDatabase();
+  const formData = await req.formData();
+  const file = formData.get("image");
+  const title = formData.get("title");
+
+  let imageLink = "";
+
+  if (!title) {
+    return NextResponse.json(
+      { message: "title are required" },
+      { status: 400 }
+    );
+  }
+
+  try {
     const decoded = jwt.verify(
       cookies().get("Auth-Token").value,
       process.env.JWT_SECRET
     );
-    console.log(req.body);
 
-    const { title } = req.body;
-    let imageLink = "";
-
-    try {
-      if (req.file) {
-        imageLink = await uploadToS3(req.file);
-      }
-
-      const post = new Post({
-        title,
-        imageLink,
-        createdBy: decoded.userId,
-      });
-
-      await post.save();
-
-      return NextResponse.json({
-        msg: "Post created successfully",
-        status: 201,
-        post,
-      });
-    } catch (error) {
-      console.log(error);
-      return NextResponse.json({
-        msg: "Internal Server Error",
-        error: error.message,
-        status: 500,
-      });
+    if (file) {
+      const base64Data = file.split(",")[1];
+      const buffer = Buffer.from(base64Data, "base64");
+      const fileType = file.split(";")[0].split(":")[1];
+      imageLink = await uploadToS3(file, fileType, buffer, title);
     }
-  });
 
-export default handler;
+    const post = new Post({
+      title,
+      imageLink,
+      createdBy: decoded.userId,
+    });
+
+    await post.save();
+
+    return NextResponse.json({
+      message: "Post created successfully",
+      status: 201,
+      post,
+    });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: 500,
+    });
+  }
+}
+
+export async function GET(req) {
+  await connectToDatabase();
+
+  try {
+    const decoded = jwt.verify(
+      cookies().get("Auth-Token").value,
+      process.env.JWT_SECRET
+    );
+
+    const posts = await Post.find({ createdBy: decoded.userId });
+
+    return NextResponse.json({
+      message: "Posts Found",
+      status: 201,
+      posts,
+    });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: 500,
+    });
+  }
+}

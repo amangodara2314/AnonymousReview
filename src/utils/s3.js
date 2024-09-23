@@ -30,13 +30,13 @@ export const upload = multer({
   },
 });
 
-export const uploadToS3 = async (file) => {
-  const fileName = `${uuidv4()}-${file.originalname}`;
+export const uploadToS3 = async (file, type, buffer, title) => {
+  const fileName = `${uuidv4()}-${title}`;
   const uploadParams = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileName,
-    Body: file.buffer,
-    ContentType: file.mimetype,
+    Body: buffer,
+    ContentType: type,
   };
 
   const command = new PutObjectCommand(uploadParams);

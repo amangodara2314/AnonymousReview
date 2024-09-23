@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,29 +24,23 @@ import {
   Image as ImageIcon,
   X,
   LogOut,
+  Loader2,
+  CheckIcon,
 } from "lucide-react";
 import { useGlobalContext } from "@/context/GlobalContext";
 import toast from "react-hot-toast";
 
 export default function Dashboard() {
-  const { BASE_URL, POST } = useGlobalContext();
+  const { BASE_URL, POST, posts, fetchPosts } = useGlobalContext();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [generatedLink, setGeneratedLink] = useState("");
   const [loading, setLoading] = useState(false);
-  const [previousPosts, setPreviousPosts] = useState([
-    { id: 1, title: "Team Feedback", link: "https://reviewecho.com/r/abc123" },
-    {
-      id: 2,
-      title: "Project Evaluation",
-      link: "https://reviewecho.com/r/def456",
-    },
-    {
-      id: 3,
-      title: "Customer Satisfaction Survey",
-      link: "https://reviewecho.com/r/ghi789",
-    },
-  ]);
+  const [coppied, setCoppied] = useState("bitch");
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -81,6 +75,7 @@ export default function Dashboard() {
       if (response.status == 200) {
         const newLink = `${BASE_URL}/${data.post._id}`;
         setGeneratedLink(newLink);
+        fetchPosts();
         setTitle("");
         setImage(null);
       } else {
@@ -95,7 +90,11 @@ export default function Dashboard() {
   };
 
   const copyLink = (link) => {
+    setCoppied(link);
     navigator.clipboard.writeText(link);
+    setTimeout(() => {
+      setCoppied("");
+    }, 2000);
   };
 
   return (
@@ -105,7 +104,6 @@ export default function Dashboard() {
           <h2 className="text-3xl lg:text-5xl font-bold mb-8 text-center">
             Create a new post and start getting reviews
           </h2>
-
           <div className="grid grid-cols-1 gap-8 place-items-center">
             <Card className="bg-zinc-950 border-zinc-800 w-full sm:w-[80%] lg:w-1/2">
               <CardHeader>
@@ -176,61 +174,82 @@ export default function Dashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {previousPosts.map((post) => (
-                  <div
-                    key={post.id}
-                    className="flex items-center justify-between p-4 bg-black rounded-lg"
-                  >
-                    <div>
-                      <h3 className="font-medium">{post.title}</h3>
-                      <p className="text-sm text-zinc-400">{post.link}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => copyLink(post.link)}
-                      className="text-white hover:bg-zinc-900 transition-colors"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
+                {!posts && (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="animate-spin" />
                   </div>
-                ))}
+                )}
+                {posts && posts.length == 0 ? (
+                  <div className="text-sm text-zinc-500">No Post Found !</div>
+                ) : (
+                  posts &&
+                  posts.map((post) => (
+                    <div
+                      key={post.id}
+                      className="flex items-center justify-between p-4 bg-black rounded-lg"
+                    >
+                      <div>
+                        <h3 className="font-medium">{post.title}</h3>
+                        <p className="text-sm text-zinc-400">
+                          {BASE_URL + "/" + post._id}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={coppied == BASE_URL + "/" + post._id}
+                        onClick={() => copyLink(BASE_URL + "/" + post._id)}
+                        className="hover:text-white hover:bg-inherit"
+                      >
+                        {coppied == BASE_URL + "/" + post._id ? (
+                          <CheckIcon className="h-5 w-5" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  ))
+                )}
               </CardContent>
             </Card>
           </div>
-
-          {generatedLink && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="mt-8 mx-auto block bg-white text-black hover:bg-zinc-200 transition-colors">
-                  <LinkIcon className="mr-2 h-4 w-4" />
-                  View Generated Link
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-zinc-950 border-zinc-800">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-semibold text-white">
-                    Your Generated Link
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="flex items-center space-x-4 mt-4">
-                  <Input
-                    readOnly
-                    value={generatedLink}
-                    className="bg-black border-zinc-800 text-white"
-                  />
-                  <Button
-                    onClick={() => copyLink(generatedLink)}
-                    variant="outline"
-                    size="icon"
-                    className="text-white border-zinc-800 hover:bg-zinc-900 transition-colors"
-                  >
+          <Dialog
+            className="z-50"
+            open={generatedLink !== ""}
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setGeneratedLink("");
+              }
+            }}
+          >
+            <DialogContent className="bg-zinc-950 border-zinc-800">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-semibold text-white">
+                  Your Generated Link
+                </DialogTitle>
+              </DialogHeader>
+              <div className="flex items-center space-x-4 mt-4">
+                <Input
+                  readOnly
+                  value={generatedLink}
+                  className="bg-black border-zinc-800 text-white"
+                />
+                <Button
+                  onClick={() => copyLink(generatedLink)}
+                  variant="outline"
+                  size="icon"
+                  disabled={coppied === generatedLink}
+                  className="hover:text-white hover:bg-inherit border-zinc-800"
+                >
+                  {coppied === generatedLink ? (
+                    <CheckIcon className="h-5 w-5" />
+                  ) : (
                     <Copy className="h-4 w-4" />
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
+                  )}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </main>
     </div>
