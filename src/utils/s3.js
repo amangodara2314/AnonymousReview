@@ -31,7 +31,7 @@ export const upload = multer({
 });
 
 export const uploadToS3 = async (file, type, buffer, title) => {
-  const fileName = `${uuidv4()}-${title}`;
+  const fileName = `${uuidv4()}-${title}-${type}`;
   const uploadParams = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileName,

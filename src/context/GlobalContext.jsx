@@ -25,16 +25,55 @@ function GlobalContext({ children }) {
     const response = await fetch(BASE_URL + POST + "/" + id);
 
     const data = await response.json();
-    console.log(data);
     if (data.status == 200) {
       setPost(data.post);
     } else {
       setError(data.message);
     }
   };
+
+  const fetchPostReviews = async (id, setPost, setError) => {
+    const response = await fetch(BASE_URL + POST + "/reviews/" + id);
+
+    const data = await response.json();
+    if (data.status == 200) {
+      setPost(data.post);
+    } else {
+      setError(data.message);
+    }
+  };
+
+  const submitReview = async (id, setIsSubmitted, setReview, review) => {
+    const response = await fetch(BASE_URL + POST + "/" + id, {
+      method: "POST",
+      body: JSON.stringify({ review: review }),
+    });
+
+    const data = await response.json();
+    if (data.status == 200) {
+      setIsSubmitted(true);
+      setReview("");
+      // setTimeout(() => {
+      //   setIsSubmitted(false);
+      // }, 4000);
+    } else {
+      toast.error(data.message);
+    }
+  };
+
   return (
     <MainContext.Provider
-      value={{ BASE_URL, SIGNUP, LOGIN, POST, posts, fetchPosts, fetchPost }}
+      value={{
+        BASE_URL,
+        SIGNUP,
+        LOGIN,
+        POST,
+        posts,
+        fetchPosts,
+        fetchPost,
+        submitReview,
+        fetchPostReviews,
+      }}
     >
       {children}
       <Toaster position="top-center" />

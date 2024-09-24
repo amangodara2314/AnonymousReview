@@ -2,7 +2,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import GlobalContext from "@/context/GlobalContext";
 import "tailwindcss/tailwind.css";
-
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",

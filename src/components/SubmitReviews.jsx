@@ -18,7 +18,7 @@ import { ErrorIcon } from "react-hot-toast";
 import DashboardHeader from "./DashboardHeader";
 
 export default function SubmitReview({ id }) {
-  const { fetchPost } = useGlobalContext();
+  const { fetchPost, submitReview } = useGlobalContext();
   const [review, setReview] = useState("");
   const [post, setPost] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -36,9 +36,7 @@ export default function SubmitReview({ id }) {
   };
 
   const handleSubmit = () => {
-    console.log("Submitting review:", review);
-    setIsSubmitted(true);
-    setReview("");
+    submitReview(id, setIsSubmitted, setReview, review);
   };
 
   if (error) {
@@ -54,9 +52,11 @@ export default function SubmitReview({ id }) {
     );
   }
   if (!post) {
-    <div className="min-h-screen bg-black text-white font-sans p-8 flex items-center justify-center">
-      <Loader2 className="animate-spin" />
-    </div>;
+    return (
+      <div className="min-h-screen bg-black text-white font-sans p-8 flex items-center justify-center">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   }
 
   const options = {
@@ -74,13 +74,13 @@ export default function SubmitReview({ id }) {
       {post && (
         <>
           <DashboardHeader />
-          <div className="min-h-screen bg-black text-white font-sans p-8">
+          <div className="min-h-screen bg-black text-white font-sans p-4">
             <div className="max-w-2xl mx-auto">
-              <h1 className="text-4xl font-bold mb-12 text-center">
+              <h1 className="text-4xl font-bold mb-8 text-center">
                 Submit Your Review
               </h1>
 
-              <Card className="bg-zinc-950 border-zinc-800 mb-8">
+              <Card className="bg-zinc-950 border-zinc-800">
                 <CardHeader>
                   <CardTitle className="text-2xl font-semibold text-white">
                     <div className="flex justify-between items-center">
@@ -108,6 +108,26 @@ export default function SubmitReview({ id }) {
                 )}
               </Card>
 
+              <AnimatePresence>
+                {isSubmitted && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="my-8"
+                  >
+                    <Card className="bg-green-900 border-green-700">
+                      <CardContent className="py-4">
+                        <p className="text-center text-green-400">
+                          Your review has been submitted successfully. Thank you
+                          for your feedback!
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <Card className="bg-zinc-950 border-zinc-800">
                 <CardHeader>
                   <CardTitle className="text-2xl font-semibold text-white">
@@ -143,7 +163,7 @@ export default function SubmitReview({ id }) {
                 <CardFooter>
                   <Button
                     onClick={handleSubmit}
-                    className="w-full bg-white text-black py-2"
+                    className="w-full hover:bg-white hover:text-black bg-white text-black py-2"
                     disabled={review.length === 0 || isSubmitted}
                   >
                     <Send className="w-4 h-4 mr-2" />
@@ -151,27 +171,6 @@ export default function SubmitReview({ id }) {
                   </Button>
                 </CardFooter>
               </Card>
-
-              <AnimatePresence>
-                {isSubmitted && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-8"
-                  >
-                    <Card className="bg-green-900 border-green-700">
-                      <CardContent className="py-4">
-                        <p className="text-center text-green-400">
-                          Your review has been submitted successfully. Thank you
-                          for your feedback!
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
         </>

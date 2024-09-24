@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useGlobalContext } from "@/context/GlobalContext";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function Dashboard() {
   const { BASE_URL, POST, posts, fetchPosts } = useGlobalContext();
@@ -188,25 +189,37 @@ export default function Dashboard() {
                       key={post.id}
                       className="flex items-center justify-between p-4 bg-black rounded-lg"
                     >
-                      <div>
-                        <h3 className="font-medium">{post.title}</h3>
+                      <div className="w-[70%]">
+                        <h3 className="font-medium truncate">{post.title}</h3>
                         <p className="text-sm text-zinc-400">
                           {BASE_URL + "/" + post._id}
                         </p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={coppied == BASE_URL + "/" + post._id}
-                        onClick={() => copyLink(BASE_URL + "/" + post._id)}
-                        className="hover:text-white hover:bg-inherit"
-                      >
-                        {coppied == BASE_URL + "/" + post._id ? (
-                          <CheckIcon className="h-5 w-5" />
-                        ) : (
-                          <Copy className="h-4 w-4" />
-                        )}
-                      </Button>
+                      <div className="space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={coppied == BASE_URL + "/" + post._id}
+                          onClick={() => copyLink(BASE_URL + "/" + post._id)}
+                          className="hover:text-white hover:bg-inherit"
+                        >
+                          {coppied == BASE_URL + "/" + post._id ? (
+                            <CheckIcon className="h-5 w-5" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
+                        <Button
+                          className={`bg-white hover:bg-zinc-200 text-black`}
+                        >
+                          <Link
+                            className={"w-full h-full"}
+                            href={"/dashboard/post/" + post._id}
+                          >
+                            View Reviews
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
                   ))
                 )}
