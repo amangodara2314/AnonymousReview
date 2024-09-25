@@ -8,13 +8,26 @@ export async function GET(req, { params }) {
     const post = await Post.findById(params.id)
       .populate("createdBy")
       .select(["-password", "-reviews"]);
+
+    if (!post.isActive) {
+      return NextResponse.json({
+        message: "This post is now inactive.",
+        status: 500,
+      });
+    }
     if (post) {
       return NextResponse.json({
-        message: "Posts Found",
+        message: "Post Found",
         status: 200,
         post,
       });
     }
+
+    return NextResponse.json({
+      message: "Post Not Found",
+      status: 404,
+      post,
+    });
   } catch (error) {
     console.log(error);
     return NextResponse.json({

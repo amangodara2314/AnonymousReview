@@ -61,6 +61,20 @@ function GlobalContext({ children }) {
     }
   };
 
+  async function isActive(status, id) {
+    const response = await fetch(`${BASE_URL + POST}`, {
+      method: "PUT",
+      body: JSON.stringify({ status: status, id: id }),
+    });
+    const data = await response.json();
+    if (data.status == 200) {
+      toast.success(data.message);
+      fetchPosts();
+    } else {
+      toast.error(data.message);
+    }
+  }
+
   return (
     <MainContext.Provider
       value={{
@@ -73,6 +87,7 @@ function GlobalContext({ children }) {
         fetchPost,
         submitReview,
         fetchPostReviews,
+        isActive,
       }}
     >
       {children}

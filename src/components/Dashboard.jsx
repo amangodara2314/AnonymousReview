@@ -30,9 +30,10 @@ import {
 import { useGlobalContext } from "@/context/GlobalContext";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { Switch } from "@/components/ui/switch";
 
 export default function Dashboard() {
-  const { BASE_URL, POST, posts, fetchPosts } = useGlobalContext();
+  const { BASE_URL, POST, posts, fetchPosts, isActive } = useGlobalContext();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [generatedLink, setGeneratedLink] = useState("");
@@ -189,19 +190,26 @@ export default function Dashboard() {
                       key={post.id}
                       className="flex items-center justify-between p-4 bg-black rounded-lg"
                     >
-                      <div className="w-[70%]">
+                      <div className="w-[60%]">
                         <h3 className="font-medium truncate">{post.title}</h3>
                         <p className="text-sm text-zinc-400">
                           {BASE_URL + "/" + post._id}
                         </p>
                       </div>
                       <div className="space-x-2">
+                        <Switch
+                          checked={post.isActive}
+                          onCheckedChange={(e) => {
+                            isActive(e, post._id);
+                          }}
+                        />
+
                         <Button
                           variant="ghost"
                           size="sm"
                           disabled={coppied == BASE_URL + "/" + post._id}
                           onClick={() => copyLink(BASE_URL + "/" + post._id)}
-                          className="hover:text-white hover:bg-inherit"
+                          className=""
                         >
                           {coppied == BASE_URL + "/" + post._id ? (
                             <CheckIcon className="h-5 w-5" />
@@ -209,9 +217,7 @@ export default function Dashboard() {
                             <Copy className="h-4 w-4" />
                           )}
                         </Button>
-                        <Button
-                          className={`bg-white hover:bg-zinc-200 text-black`}
-                        >
+                        <Button className={``}>
                           <Link
                             className={"w-full h-full"}
                             href={"/dashboard/post/" + post._id}

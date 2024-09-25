@@ -45,9 +45,7 @@ export default function SubmitReview({ id }) {
         <div className="flex items-center gap-4 text-2xl">
           <ErrorIcon /> {error}
         </div>
-        <span className="mt-4 text-lg">
-          Please confirm if the link is valid
-        </span>
+        <span className="mt-4 text-lg">Please try again later.</span>
       </div>
     );
   }
@@ -80,7 +78,7 @@ export default function SubmitReview({ id }) {
                 Submit Your Review
               </h1>
 
-              <Card className="bg-zinc-950 border-zinc-800">
+              <Card className="bg-zinc-950 border-zinc-800 mb-8">
                 <CardHeader>
                   <CardTitle className="text-2xl font-semibold text-white">
                     <div className="flex justify-between items-center">

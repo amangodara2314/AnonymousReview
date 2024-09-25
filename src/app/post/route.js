@@ -11,6 +11,32 @@ export const config = {
   },
 };
 
+export async function PUT(req, { params }) {
+  try {
+    const decoded = jwt.verify(
+      cookies().get("Auth-Token").value,
+      process.env.JWT_SECRET
+    );
+    const body = await req.json();
+    const { status, id } = body;
+    await connectToDatabase();
+    const post = await Post.findById(id);
+    post.isActive = status;
+    await post.save();
+
+    return NextResponse.json({
+      message: `Post is now ${status ? "active" : "paused"}`,
+      status: 200,
+    });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({
+      message: "Internal Server Error",
+      status: 500,
+    });
+  }
+}
+
 export async function POST(req) {
   await connectToDatabase();
   const formData = await req.formData();

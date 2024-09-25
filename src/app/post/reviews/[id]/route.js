@@ -20,6 +20,7 @@ export async function GET(req, { params }) {
         status: 404,
       });
     }
+
     return NextResponse.json({
       message: "Posts Found",
       status: 200,
