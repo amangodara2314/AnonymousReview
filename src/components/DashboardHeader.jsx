@@ -28,7 +28,7 @@ function DashboardHeader() {
         <div className="flex items-center gap-4">
           <Link
             href={"/dashboard"}
-            className="text-zinc-500 text-md hover:text-zinc-300 duration-200"
+            className="text-zinc-400 text-md hover:text-zinc-200 duration-200"
           >
             Dashboard
           </Link>
