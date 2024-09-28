@@ -13,6 +13,16 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  otp: {
+    type: String,
+  },
+  otpExpiresAt: {
+    type: Date,
+  },
 });
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
