@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -47,7 +47,6 @@ const OTPInput = ({ value, onChange, length = 6 }) => {
       inputRefs.current[index + 1].focus();
     }
   };
-
   return (
     <div className="flex justify-between">
       {Array(length)
@@ -73,14 +72,30 @@ export default function VerifyOtp() {
   const [otp, setOTP] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState("");
+  const [countdown, setCountdown] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [countdown]);
 
   const handleVerify = async () => {
     setIsVerifying(true);
     setError("");
 
+    // Simulating API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
+    // For demonstration, let's assume OTP '123456' is correct
     if (otp === "123456") {
+      // Handle successful verification (e.g., redirect to dashboard)
       console.log("OTP verified successfully");
     } else {
       setError("Invalid OTP. Please try again.");
@@ -90,8 +105,11 @@ export default function VerifyOtp() {
   };
 
   const handleResend = async () => {
+    // Simulating API call to resend OTP
     await new Promise((resolve) => setTimeout(resolve, 1500));
     console.log("OTP resent");
+    setCountdown(60); // Start the 60-second countdown
+    // You might want to show a success message here
   };
 
   return (
@@ -123,10 +141,11 @@ export default function VerifyOtp() {
             <Button
               variant="link"
               onClick={handleResend}
-              className="text-zinc-400 hover:text-white p-0"
+              disabled={countdown > 0}
+              className="text-zinc-400 hover:text-white p-0 disabled:opacity-50"
             >
               <RefreshCcw className="mr-2 h-4 w-4" />
-              Resend OTP
+              {countdown > 0 ? `Resend OTP (${countdown}s)` : "Resend OTP"}
             </Button>
             <Link href="/login" className="text-zinc-400 hover:text-white">
               Back to Login
