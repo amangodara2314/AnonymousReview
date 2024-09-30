@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { sendOtp } from "@/utils/mailer";
 
 export async function POST(req) {
   try {
@@ -29,12 +30,22 @@ export async function POST(req) {
       password: hashedPassword,
     });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    cookies().set("Auth-Token", token);
-    return NextResponse.json(
-      { message: "User created successfully", token },
-      { status: 201 }
-    );
+    const res = await sendOtp(email);
+    if (res.success) {
+      return NextResponse.redirect(new URL("/verify/" + email, req.url));
+    } else {
+      return NextResponse.json(
+        { message: "Error Sending Verification Mail." },
+        { status: 500 }
+      );
+    }
+
+    // const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+    // cookies().set("Auth-Token", token);
+    // return NextResponse.json(
+    //   { message: "User created successfully", token },
+    //   { status: 201 }
+    // );
   } catch (error) {
     console.log(error);
     return NextResponse.json(

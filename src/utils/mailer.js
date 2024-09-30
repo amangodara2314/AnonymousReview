@@ -4,9 +4,7 @@ function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-export async function sendOtp() {
-  const { email } = await req.json();
-
+export async function sendOtp(email) {
   const otp = generateOTP();
 
   let transporter = nodemailer.createTransport({
