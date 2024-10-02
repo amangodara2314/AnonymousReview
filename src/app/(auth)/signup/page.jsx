@@ -48,13 +48,12 @@ export default function SignUp() {
         body: JSON.stringify(data),
       });
       const result = await response.json();
-      console.log(response, "result=", result);
-
-      if (response.status == 201) {
-        router.push("/dashboard");
-      } else {
-        toast.error(result.message);
+      if (response.status == 301) {
+        router.replace("/verify/" + email);
+        return;
       }
+
+      toast.error(result.message);
     } catch (error) {
       toast.error("Something Went Wrong !!");
     } finally {

@@ -13,6 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { ArrowRight, RefreshCcw } from "lucide-react";
 import Link from "next/link";
+import { confirmOtp } from "@/utils/verify";
+import { useRouter } from "next/navigation";
 
 const OTPInput = ({ value, onChange, length = 6 }) => {
   const inputRefs = useRef([]);
@@ -68,11 +70,12 @@ const OTPInput = ({ value, onChange, length = 6 }) => {
   );
 };
 
-export default function VerifyOtp() {
+export default function VerifyOtp({ email }) {
   const [otp, setOTP] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState("");
-  const [countdown, setCountdown] = useState(0);
+  const router = useRouter();
+  const [countdown, setCountdown] = useState(120);
 
   useEffect(() => {
     let timer;
@@ -90,15 +93,13 @@ export default function VerifyOtp() {
     setIsVerifying(true);
     setError("");
 
-    // Simulating API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const decodedEmail = decodeURIComponent(email);
 
-    // For demonstration, let's assume OTP '123456' is correct
-    if (otp === "123456") {
-      // Handle successful verification (e.g., redirect to dashboard)
-      console.log("OTP verified successfully");
-    } else {
-      setError("Invalid OTP. Please try again.");
+      const result = await confirmOtp(decodedEmail, otp);
+      router.push("/dashboard");
+    } catch (error) {
+      setError(error.message);
     }
 
     setIsVerifying(false);
