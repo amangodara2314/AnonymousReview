@@ -15,6 +15,7 @@ import { ArrowRight, RefreshCcw } from "lucide-react";
 import Link from "next/link";
 import { confirmOtp } from "@/utils/verify";
 import { useRouter } from "next/navigation";
+import { resendOtp } from "@/utils/mailer";
 
 const OTPInput = ({ value, onChange, length = 6 }) => {
   const inputRefs = useRef([]);
@@ -75,7 +76,8 @@ export default function VerifyOtp({ email }) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const [countdown, setCountdown] = useState(120);
+  const [countdown, setCountdown] = useState(0);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     let timer;
@@ -106,11 +108,21 @@ export default function VerifyOtp({ email }) {
   };
 
   const handleResend = async () => {
-    // Simulating API call to resend OTP
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("OTP resent");
-    setCountdown(60); // Start the 60-second countdown
-    // You might want to show a success message here
+    setIsResending(true);
+    try {
+      const decodedEmail = decodeURIComponent(email);
+
+      const res = await resendOtp(decodedEmail);
+      if (!res) {
+        setError("Error resending email");
+      } else {
+        setCountdown(60);
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -142,15 +154,12 @@ export default function VerifyOtp({ email }) {
             <Button
               variant="link"
               onClick={handleResend}
-              disabled={countdown > 0}
+              disabled={countdown > 0 || isResending}
               className="text-zinc-400 hover:text-white p-0 disabled:opacity-50"
             >
               <RefreshCcw className="mr-2 h-4 w-4" />
               {countdown > 0 ? `Resend OTP (${countdown}s)` : "Resend OTP"}
             </Button>
-            <Link href="/login" className="text-zinc-400 hover:text-white">
-              Back to Login
-            </Link>
           </div>
         </CardFooter>
       </Card>

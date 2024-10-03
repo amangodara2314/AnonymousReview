@@ -1,3 +1,4 @@
+"use server";
 import nodemailer from "nodemailer";
 import { connectToDatabase } from "./database";
 import User from "@/models/user.model";
@@ -124,6 +125,7 @@ export async function sendOtp(email) {
       otp,
     };
   } catch (error) {
+    console.log(error);
     return { success: false, message: "Failed to send OTP." };
   }
 }
@@ -132,5 +134,18 @@ export const resendOtp = async (email) => {
   try {
     await connectToDatabase();
     const user = await User.findOne({ email: email });
-  } catch (error) {}
+    const res = await sendOtp(email);
+    console.log(res);
+    if (res.success) {
+      user.otp = res.otp;
+      user.otpExpiresAt = new Date(new Date().getTime() + 5 * 60000);
+      await user.save();
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
