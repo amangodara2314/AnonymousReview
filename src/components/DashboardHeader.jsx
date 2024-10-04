@@ -12,8 +12,8 @@ function DashboardHeader() {
 
   const handleLogout = () => {
     Cookies.remove("Auth-Token");
+    router.replace("/login");
     setIsLoggedIn(false);
-    router.push("/login");
   };
 
   useEffect(() => {

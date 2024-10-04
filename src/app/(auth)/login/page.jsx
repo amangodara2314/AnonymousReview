@@ -32,6 +32,10 @@ export default function Login() {
         method: "POST",
         body: JSON.stringify({ email: email, password: password }),
       });
+      if (response.status == 301) {
+        router.replace("/verify/" + email);
+        return;
+      }
       if (response.status == 200) {
         router.push("/dashboard");
       } else {

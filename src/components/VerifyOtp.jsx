@@ -76,7 +76,7 @@ export default function VerifyOtp({ email }) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const [countdown, setCountdown] = useState(0);
+  const [countdown, setCountdown] = useState(120);
   const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
